@@ -14,13 +14,36 @@ RUN apt-get update -qq && \
         libmysqlclient-dev \
         libevent-dev \
         libffi-dev libssl-dev \
-        libpcre3-dev libz-dev && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+        libpcre3-dev libz-dev
 
 # install pip/wheel
 RUN curl -o /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py && \
     python /tmp/get-pip.py && \
-    rm -rf /tmp/get-pip.py && \
     pip install --no-cache-dir -U wheel && \
     pip install --no-cache-dir requests[security]==2.10.0 && \
-    rm -rf ~/.cache/pip
+
+# python3
+RUN apt-get update -qq && \
+    apt-get install -y python3.4 python3.4-dev libpython3.4-dev && \
+    cp -a /usr/local/bin/pip /tmp/pip2 && \
+    curl -s -o /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py && \
+    python3 /tmp/get-pip.py && \
+    cp -a /usr/local/bin/pip /usr/local/bin/pip3 && \
+    cp -a /tmp/pip2 /usr/local/bin/pip && \
+    cp -a /tmp/pip2 /usr/local/bin/pip2 && \
+
+# Clean up for docker squash
+# See https://github.com/goldmann/docker-squash
+RUN rm -rf \
+    /root/.cache \
+    /root/.npm \
+    /root/.pip \
+    /usr/local/share/doc \
+    /usr/share/doc \
+    /usr/share/man \
+    /usr/share/vim/vim74/doc \
+    /usr/share/vim/vim74/lang \
+    /usr/share/vim/vim74/spell/en* \
+    /usr/share/vim/vim74/tutor \
+    /var/lib/apt/lists/* \
+    /tmp/*

@@ -1,4 +1,5 @@
 base_image=lins05/base:14.04
+base_squashed_image=lins05/base:14.04-squashed
 base_image_1604=lins05/base:16.04
 
 java8_squashed_image=lins05/java:8-squashed
@@ -23,6 +24,11 @@ push-1604:
 
 java8:
 	cd $(CURDIR) &&	docker build -t $(java8_image) java8
+
+squash-base:
+	TMP_DIR=/tmp/docker-squash/tmp docker-squash --tag $(base_squashed_image) $(base_image) --from-layer ubuntu:14.04
+	docker tag $(base_squashed_image) $(base_image)
+	docker history $(base_image)
 
 squash-java8:
 	TMP_DIR=/tmp/docker-squash/tmp docker-squash --tag $(java8_squashed_image) $(java8_image) --from-layer ubuntu:14.04
